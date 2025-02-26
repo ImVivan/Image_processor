@@ -15,15 +15,28 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 
-app.use(cors({
-  origin: [
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  
+ 
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
-    'https://your-netlify-frontend-url.netlify.app', 
-  ],
-  methods: ['GET', 'POST'],
+
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
   optionsSuccessStatus: 200
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -438,7 +451,9 @@ async function triggerWebhook(requestId, totalImages, processedImages) {
   }
 }
 
+// Make the processed directory accessible
 app.use('/processed', express.static(processedDir));
+app.use('/uploads', express.static(uploadsDir));
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

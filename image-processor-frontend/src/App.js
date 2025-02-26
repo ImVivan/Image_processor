@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './App.css';
 
@@ -35,6 +35,7 @@ function App() {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+        withCredentials: false
       });
 
       setRequestId(response.data.requestId);
@@ -42,12 +43,13 @@ function App() {
       setCheckRequestId(response.data.requestId);
       setActiveTab('status');
     } catch (err) {
+      console.error('Upload error:', err);
       setError(err.response?.data?.message || 'Error uploading file');
       setStatus('');
     }
   };
 
-  const checkStatus = async () => {
+  const checkStatus = useCallback(async () => {
     try {
       if (!checkRequestId) {
         setError('Please enter a request ID');
@@ -57,28 +59,33 @@ function App() {
       setError('');
       setStatus('Checking status...');
       
-      const response = await axios.get(`${API_URL}/api/status/${checkRequestId}`);
+      const response = await axios.get(`${API_URL}/api/status/${checkRequestId}`, {
+        withCredentials: false
+      });
+      
       setProcessingData(response.data);
       setStatus(`Status: ${response.data.status}`);
       
-      // If processing is complete, fetch results
       if (response.data.status === 'completed') {
         fetchResults(checkRequestId);
       }
     } catch (err) {
+      console.error('Status check error:', err);
       setError(err.response?.data?.message || 'Error checking status');
       setStatus('');
     }
-  };
+  }, [checkRequestId, fetchResults]);
 
-  const fetchResults = async (id) => {
+  const fetchResults = useCallback(async (id) => {
     try {
-      const response = await axios.get(`${API_URL}/api/results/${id}`);
+      const response = await axios.get(`${API_URL}/api/results/${id}`, {
+        withCredentials: false
+      });
       setResults(response.data);
     } catch (err) {
       console.error('Error fetching results:', err);
     }
-  };
+  }, []);
 
   const downloadCSV = () => {
     if (results && results.outputCsvPath) {
@@ -102,7 +109,7 @@ function App() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [checkRequestId, processingData]);
+  }, [checkRequestId, processingData, checkStatus]);
 
   return (
     <div className="App">
