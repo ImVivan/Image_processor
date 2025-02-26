@@ -9,6 +9,7 @@ const { parse } = require('csv-parse');
 const axios = require('axios');
 const sharp = require('sharp');
 
+const API_URL = process.env.API_URL || 'http://localhost:5000';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -381,7 +382,8 @@ async function triggerWebhook(requestId, totalImages, processedImages) {
         inputImageCount: product.inputImageUrls.length,
         outputImageCount: product.outputImageUrls.length
       })),
-      outputCsvUrl: `${REACT_APP_API_URL}/processed/${path.basename(request.outputCsvPath)}`    };
+      outputCsvUrl: `${API_URL}/processed/${path.basename(request.outputCsvPath)}`
+    };
     
     const response = await axios.post(webhookUrl, payload);
     
