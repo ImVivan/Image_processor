@@ -307,7 +307,7 @@ async function processCSV(requestId, filePath) {
           
           await fs.promises.writeFile(outputPath, processedImageBuffer);
 
-          const outputUrl = `http://localhost:${PORT}/processed/${filename}`;
+          const outputUrl = `${API_URL}/processed/${filename}`;
           outputImageUrls.push(outputUrl);
           
           processedImages++;
@@ -373,8 +373,7 @@ async function triggerWebhook(requestId, totalImages, processedImages) {
         inputImageCount: product.inputImageUrls.length,
         outputImageCount: product.outputImageUrls.length
       })),
-      outputCsvUrl: `http://localhost:${PORT}/processed/${path.basename(request.outputCsvPath)}`
-    };
+      outputCsvUrl: `${REACT_APP_API_URL}/processed/${path.basename(request.outputCsvPath)}`    };
     
     const response = await axios.post(webhookUrl, payload);
     

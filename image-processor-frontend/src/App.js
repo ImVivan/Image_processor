@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './App.css';
 const REACT_APP_API_URL = process.env.REACT_APP_API_URL;
@@ -49,7 +49,7 @@ function App() {
     }
   };
 
-  const checkStatus = async () => {
+  const checkStatus = useCallback(async () => {
     try {
       if (!checkRequestId) {
         setError('Please enter a request ID');
@@ -70,7 +70,7 @@ function App() {
       setError(err.response?.data?.message || 'Error checking status');
       setStatus('');
     }
-  };
+  }, [checkRequestId, fetchResults]);
 
   const fetchResults = async (id) => {
     try {
@@ -101,7 +101,7 @@ function App() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [checkRequestId, processingData]);
+  }, [checkRequestId, processingData, checkStatus]);
 
   return (
     <div className="App">
