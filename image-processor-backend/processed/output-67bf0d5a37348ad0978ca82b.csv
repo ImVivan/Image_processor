@@ -1,0 +1,4 @@
+S. No.,Product Name,Input Image Urls,Output Image Urls
+1,SKU1,"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500, https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500","http://localhost:5000/processed/1740574042727-594266567.jpg, http://localhost:5000/processed/1740574042783-640560675.jpg"
+2,SKU2,"https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500, https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500","http://localhost:5000/processed/1740574042866-535239780.jpg, http://localhost:5000/processed/1740574042914-11295695.jpg"
+3,SKU3,,"https://images.unsplash.com/photo-1560343090-f0409e92791a?w=500","http://localhost:5000/processed/1740574042991-68917704.jpg"
