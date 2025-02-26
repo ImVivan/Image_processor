@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
+const REACT_APP_API_URL = process.env.REACT_APP_API_URL;
+
+
+
 
 function App() {
   const [file, setFile] = useState(null);
@@ -29,7 +33,7 @@ function App() {
 
       setStatus('Uploading...');
       
-      const response = await axios.post('http://localhost:5000/api/upload', formData, {
+      const response = await axios.post(`${REACT_APP_API_URL}/api/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -55,7 +59,7 @@ function App() {
       setError('');
       setStatus('Checking status...');
       
-      const response = await axios.get(`http://localhost:5000/api/status/${checkRequestId}`);
+      const response = await axios.get(`${REACT_APP_API_URL}/api/status/${checkRequestId}`);
       setProcessingData(response.data);
       setStatus(`Status: ${response.data.status}`);
       
@@ -70,7 +74,7 @@ function App() {
 
   const fetchResults = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/results/${id}`);
+      const response = await axios.get(`${REACT_APP_API_URL}/api/results/${id}`);
       setResults(response.data);
     } catch (err) {
       console.error('Error fetching results:', err);
@@ -80,7 +84,7 @@ function App() {
   const downloadCSV = () => {
     if (results && results.outputCsvPath) {
       const filename = results.outputCsvPath.split('/').pop();
-      window.open(`http://localhost:5000/processed/${filename}`, '_blank');
+      window.open(`${REACT_APP_API_URL}/processed/${filename}`, '_blank');
     }
   };
 
