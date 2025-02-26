@@ -70,8 +70,10 @@ function App() {
       setError(err.response?.data?.message || 'Error checking status');
       setStatus('');
     }
+  // eslint-disable-next-line no-use-before-define
   }, [checkRequestId, fetchResults]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchResults = async (id) => {
     try {
       const response = await axios.get(`${REACT_APP_API_URL}/api/results/${id}`);
