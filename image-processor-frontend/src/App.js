@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
-const REACT_APP_API_URL = process.env.REACT_APP_API_URL;
 
-
-
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 function App() {
   const [file, setFile] = useState(null);
@@ -33,7 +31,7 @@ function App() {
 
       setStatus('Uploading...');
       
-      const response = await axios.post(`${REACT_APP_API_URL}/api/upload`, formData, {
+      const response = await axios.post(`${API_URL}/api/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -49,7 +47,7 @@ function App() {
     }
   };
 
-  const checkStatus = useCallback(async () => {
+  const checkStatus = async () => {
     try {
       if (!checkRequestId) {
         setError('Please enter a request ID');
@@ -59,10 +57,11 @@ function App() {
       setError('');
       setStatus('Checking status...');
       
-      const response = await axios.get(`${REACT_APP_API_URL}/api/status/${checkRequestId}`);
+      const response = await axios.get(`${API_URL}/api/status/${checkRequestId}`);
       setProcessingData(response.data);
       setStatus(`Status: ${response.data.status}`);
       
+      // If processing is complete, fetch results
       if (response.data.status === 'completed') {
         fetchResults(checkRequestId);
       }
@@ -70,13 +69,11 @@ function App() {
       setError(err.response?.data?.message || 'Error checking status');
       setStatus('');
     }
-  // eslint-disable-next-line no-use-before-define
-  }, [checkRequestId, fetchResults]);
+  };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchResults = async (id) => {
     try {
-      const response = await axios.get(`${REACT_APP_API_URL}/api/results/${id}`);
+      const response = await axios.get(`${API_URL}/api/results/${id}`);
       setResults(response.data);
     } catch (err) {
       console.error('Error fetching results:', err);
@@ -85,11 +82,13 @@ function App() {
 
   const downloadCSV = () => {
     if (results && results.outputCsvPath) {
+      // Extract filename from path
       const filename = results.outputCsvPath.split('/').pop();
-      window.open(`${REACT_APP_API_URL}/processed/${filename}`, '_blank');
+      window.open(`${API_URL}/processed/${filename}`, '_blank');
     }
   };
 
+  // Poll for status updates if we have a request ID and processing is not complete
   useEffect(() => {
     let interval;
     
@@ -97,13 +96,13 @@ function App() {
         (processingData.status === 'pending' || processingData.status === 'processing')) {
       interval = setInterval(() => {
         checkStatus();
-      }, 5000);
+      }, 5000); // Check every 5 seconds
     }
     
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [checkRequestId, processingData, checkStatus]);
+  }, [checkRequestId, processingData]);
 
   return (
     <div className="App">
